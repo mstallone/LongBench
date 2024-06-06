@@ -46,7 +46,7 @@ def parse_args(args=None):
     return parser.parse_args(args)
 
 def scorer_e(dataset, predictions, answers, lengths, all_classes):
-    scores = {"0-4k": [], "4-8k": [], "8k+": []}
+    scores = {"0-4k": [], "4-8k": [], "8-16k": [], "16-32k": [], "32k+": []}
     for (prediction, ground_truths, length) in zip(predictions, answers, lengths):
         score = 0.
         if dataset in ["trec", "triviaqa", "samsum", "lsht"]:
@@ -57,8 +57,12 @@ def scorer_e(dataset, predictions, answers, lengths, all_classes):
             scores["0-4k"].append(score)
         elif length < 8000:
             scores["4-8k"].append(score)
+        elif length < 16000:
+            scores["8-16k"].append(score)
+        elif length < 32000:
+            scores["16-32k"].append(score)
         else:
-            scores["8k+"].append(score)
+            scores["32k+"].append(score)
     for key in scores.keys():
         scores[key] = round(100 * np.mean(scores[key]), 2)
     return scores
